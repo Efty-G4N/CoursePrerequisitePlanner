@@ -8,7 +8,10 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+
 import org.example.courseplanner.database.DatabaseConnection;
+
+
 
 public class App extends Application {
 
@@ -17,6 +20,8 @@ public class App extends Application {
     @Override
     public void start(Stage primaryStage) {
         DatabaseConnection.initializeDatabase();
+
+
         BorderPane root = new BorderPane();
 
         // Top section: application header
@@ -45,7 +50,6 @@ public class App extends Application {
         VBox leftBox = new VBox(10, coursesButton, prerequisitesButton, planningButton, progressButton);
         leftBox.setPadding(new Insets(15));
         leftBox.setPrefWidth(180);
-        // Left panel should keep its width but stretch full height of the window
         leftBox.prefHeightProperty().bind(root.heightProperty());
         root.setLeft(leftBox);
 
@@ -53,7 +57,6 @@ public class App extends Application {
         centerLabel = new Label("Main Content Area");
         VBox centerBox = new VBox(centerLabel);
         centerBox.setPadding(new Insets(15));
-        // Center area should grow to fill remaining width and height
         centerBox.prefWidthProperty().bind(root.widthProperty().subtract(leftBox.getPrefWidth()));
         centerBox.prefHeightProperty().bind(root.heightProperty());
         root.setCenter(centerBox);
