@@ -1,21 +1,57 @@
 package org.example.courseplanner;
 
 import javafx.application.Application;
+import javafx.geometry.Insets;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.layout.StackPane;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 public class App extends Application {
 
+    private Label centerLabel;
+
     @Override
     public void start(Stage primaryStage) {
-        Label welcomeLabel = new Label("Course Prerequisite Planner - Setup Successful!");
+        BorderPane root = new BorderPane();
 
-        StackPane root = new StackPane();
-        root.getChildren().add(welcomeLabel);
+        // Top section: application header
+        Label headerLabel = new Label("Course Prerequisite Planner");
+        headerLabel.setStyle("-fx-font-size: 20px; -fx-font-weight: bold;");
+        VBox topBox = new VBox(headerLabel);
+        topBox.setPadding(new Insets(15));
+        root.setTop(topBox);
 
-        Scene scene = new Scene(root, 500, 300);
+        // Left section: navigation menu with buttons
+        Button coursesButton = new Button("Courses");
+        Button prerequisitesButton = new Button("Prerequisites");
+        Button planningButton = new Button("Course Planning");
+        Button progressButton = new Button("Student Progress");
+
+        coursesButton.setMaxWidth(Double.MAX_VALUE);
+        prerequisitesButton.setMaxWidth(Double.MAX_VALUE);
+        planningButton.setMaxWidth(Double.MAX_VALUE);
+        progressButton.setMaxWidth(Double.MAX_VALUE);
+
+        coursesButton.setOnAction(e -> centerLabel.setText("Courses section selected"));
+        prerequisitesButton.setOnAction(e -> centerLabel.setText("Prerequisites section selected"));
+        planningButton.setOnAction(e -> centerLabel.setText("Course Planning section selected"));
+        progressButton.setOnAction(e -> centerLabel.setText("Student Progress section selected"));
+
+        VBox leftBox = new VBox(10, coursesButton, prerequisitesButton, planningButton, progressButton);
+        leftBox.setPadding(new Insets(15));
+        leftBox.setPrefWidth(180);
+        root.setLeft(leftBox);
+
+        // Center section: main content area
+        centerLabel = new Label("Main Content Area");
+        VBox centerBox = new VBox(centerLabel);
+        centerBox.setPadding(new Insets(15));
+        root.setCenter(centerBox);
+
+        Scene scene = new Scene(root, 800, 500);
 
         primaryStage.setTitle("Course Prerequisite Planner");
         primaryStage.setScene(scene);
