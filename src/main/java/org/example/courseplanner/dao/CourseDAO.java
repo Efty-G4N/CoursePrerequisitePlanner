@@ -56,4 +56,41 @@ public class CourseDAO {
 
         return courses;
     }
+
+    // UPDATE: modifies an existing course's details
+    public void updateCourse(Course course) {
+        String sql = "UPDATE courses SET course_code = ?, course_name = ?, credits = ? WHERE id = ?";
+
+        try (Connection connection = DatabaseConnection.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+
+            statement.setString(1, course.getCourseCode());
+            statement.setString(2, course.getCourseName());
+            statement.setInt(3, course.getCredits());
+            statement.setInt(4, course.getId());
+
+            int rowsAffected = statement.executeUpdate();
+            System.out.println("Rows updated: " + rowsAffected);
+
+        } catch (SQLException e) {
+            System.out.println("Error updating course: " + e.getMessage());
+        }
+    }
+
+    // DELETE: removes a course from the database by its id
+    public void deleteCourse(int courseId) {
+        String sql = "DELETE FROM courses WHERE id = ?";
+
+        try (Connection connection = DatabaseConnection.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+
+            statement.setInt(1, courseId);
+
+            int rowsAffected = statement.executeUpdate();
+            System.out.println("Rows deleted: " + rowsAffected);
+
+        } catch (SQLException e) {
+            System.out.println("Error deleting course: " + e.getMessage());
+        }
+    }
 }
