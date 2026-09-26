@@ -13,6 +13,7 @@ import javafx.scene.control.TableView;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.scene.layout.Priority;
 import org.example.courseplanner.dao.CourseDAO;
 import org.example.courseplanner.dao.PrerequisiteDAO;
 import org.example.courseplanner.graph.CourseGraph;
@@ -55,6 +56,7 @@ public class PrerequisiteView extends VBox {
         this.setSpacing(10);
         this.setPadding(new Insets(10));
         this.getChildren().addAll(formGrid, cycleStatusLabel, tableView);
+        VBox.setVgrow(tableView, Priority.ALWAYS);
     }
 
     private GridPane buildForm() {
