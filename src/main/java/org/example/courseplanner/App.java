@@ -6,9 +6,9 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import org.example.courseplanner.database.DatabaseConnection;
 
 public class App extends Application {
 
@@ -16,6 +16,7 @@ public class App extends Application {
 
     @Override
     public void start(Stage primaryStage) {
+        DatabaseConnection.initializeDatabase();
         BorderPane root = new BorderPane();
 
         // Top section: application header
