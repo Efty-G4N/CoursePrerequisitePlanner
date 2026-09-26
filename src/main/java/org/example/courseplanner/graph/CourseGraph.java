@@ -10,15 +10,18 @@ import java.util.Map;
 
 public class CourseGraph {
 
-    // adjacency list: key = a course id, value = list of course ids that require it as a prerequisite
+    // forward: key = a course id, value = list of course ids that require it (dependents)
     private final Map<Integer, List<Integer>> adjacencyList;
+
+    // reverse: key = a course id, value = list of course ids that are its direct prerequisites
+    private final Map<Integer, List<Integer>> reverseAdjacencyList;
 
     public CourseGraph() {
         adjacencyList = new HashMap<>();
+        reverseAdjacencyList = new HashMap<>();
         buildGraph();
     }
 
-    // reads all prerequisite relationships from the database and builds the graph
     private void buildGraph() {
         PrerequisiteDAO prerequisiteDAO = new PrerequisiteDAO();
         List<Prerequisite> prerequisites = prerequisiteDAO.getAllPrerequisites();
@@ -27,14 +30,19 @@ public class CourseGraph {
             int prerequisiteCourseId = p.getPrerequisiteCourseId();
             int courseId = p.getCourseId();
 
-            addEdge(prerequisiteCourseId, courseId);
+            addForwardEdge(prerequisiteCourseId, courseId);
+            addReverseEdge(courseId, prerequisiteCourseId);
         }
     }
 
-    // adds a directed edge from 'fromCourseId' to 'toCourseId'
-    private void addEdge(int fromCourseId, int toCourseId) {
+    private void addForwardEdge(int fromCourseId, int toCourseId) {
         adjacencyList.putIfAbsent(fromCourseId, new ArrayList<>());
         adjacencyList.get(fromCourseId).add(toCourseId);
+    }
+
+    private void addReverseEdge(int fromCourseId, int toCourseId) {
+        reverseAdjacencyList.putIfAbsent(fromCourseId, new ArrayList<>());
+        reverseAdjacencyList.get(fromCourseId).add(toCourseId);
     }
 
     // returns the list of course ids that directly depend on the given course
@@ -42,8 +50,16 @@ public class CourseGraph {
         return adjacencyList.getOrDefault(courseId, new ArrayList<>());
     }
 
-    // returns all course ids that appear in the graph (as either a prerequisite or a dependent)
+    // returns the list of course ids that are direct prerequisites of the given course
+    public List<Integer> getDirectPrerequisites(int courseId) {
+        return reverseAdjacencyList.getOrDefault(courseId, new ArrayList<>());
+    }
+
     public Map<Integer, List<Integer>> getAdjacencyList() {
         return adjacencyList;
+    }
+
+    public Map<Integer, List<Integer>> getReverseAdjacencyList() {
+        return reverseAdjacencyList;
     }
 }

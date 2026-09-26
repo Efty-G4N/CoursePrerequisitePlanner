@@ -1,5 +1,8 @@
 package org.example.courseplanner;
 
+
+
+
 import org.example.courseplanner.view.PrerequisiteView;
 import org.example.courseplanner.view.CourseView;
 import javafx.application.Application;
@@ -22,6 +25,8 @@ public class App extends Application {
     @Override
     public void start(Stage primaryStage) {
         DatabaseConnection.initializeDatabase();
+
+
 
 
         BorderPane root = new BorderPane();
