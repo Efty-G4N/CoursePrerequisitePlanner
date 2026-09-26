@@ -15,6 +15,9 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+
+import javafx.scene.layout.Priority;
+
 import org.example.courseplanner.dao.CourseDAO;
 import org.example.courseplanner.model.Course;
 
@@ -51,6 +54,7 @@ public class CourseView extends VBox {
         this.setSpacing(10);
         this.setPadding(new Insets(10));
         this.getChildren().addAll(formGrid, tableView);
+        VBox.setVgrow(tableView, Priority.ALWAYS);
     }
 
     private GridPane buildForm() {
