@@ -5,26 +5,30 @@ import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.concurrent.Task;
 import javafx.geometry.Insets;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
-
 import javafx.scene.layout.Priority;
-
+import javafx.scene.layout.VBox;
+import org.example.courseplanner.concurrency.AppExecutor;
 import org.example.courseplanner.dao.CourseDAO;
 import org.example.courseplanner.model.Course;
+
+import java.util.List;
 
 public class CourseView extends VBox {
 
     private final CourseDAO courseDAO;
     private final TableView<Course> tableView;
+    private final ProgressIndicator progressIndicator;
 
     private final TextField codeField;
     private final TextField nameField;
@@ -35,6 +39,9 @@ public class CourseView extends VBox {
     public CourseView() {
         courseDAO = new CourseDAO();
         tableView = new TableView<>();
+
+        progressIndicator = new ProgressIndicator();
+        progressIndicator.setVisible(false);
 
         codeField = new TextField();
         codeField.setPromptText("Course Code");
@@ -53,7 +60,7 @@ public class CourseView extends VBox {
 
         this.setSpacing(10);
         this.setPadding(new Insets(10));
-        this.getChildren().addAll(formGrid, tableView);
+        this.getChildren().addAll(formGrid, progressIndicator, tableView);
         VBox.setVgrow(tableView, Priority.ALWAYS);
     }
 
@@ -123,8 +130,29 @@ public class CourseView extends VBox {
     }
 
     private void loadCourseData() {
-        ObservableList<Course> courseList = FXCollections.observableArrayList(courseDAO.getAllCourses());
-        tableView.setItems(courseList);
+        progressIndicator.setVisible(true);
+
+        Task<List<Course>> loadCoursesTask = new Task<>() {
+            @Override
+            protected List<Course> call() {
+                return courseDAO.getAllCourses();
+            }
+        };
+
+        loadCoursesTask.setOnSucceeded(event -> {
+            // this runs back on the JavaFX thread, safe to update UI here
+            List<Course> courses = loadCoursesTask.getValue();
+            ObservableList<Course> courseList = FXCollections.observableArrayList(courses);
+            tableView.setItems(courseList);
+            progressIndicator.setVisible(false);
+        });
+
+        loadCoursesTask.setOnFailed(event -> {
+            progressIndicator.setVisible(false);
+            showAlert("Load Error", "Failed to load courses: " + loadCoursesTask.getException().getMessage());
+        });
+
+        AppExecutor.getExecutorService().submit(loadCoursesTask);
     }
 
     private void handleAddCourse() {
