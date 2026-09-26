@@ -5,9 +5,9 @@ public class Course implements Identifiable {
     private int id;
     private String courseCode;
     private String courseName;
-    private int credits;
+    private double credits;
 
-    public Course(int id, String courseCode, String courseName, int credits) {
+    public Course(int id, String courseCode, String courseName, double credits) {
         this.id = id;
         this.courseCode = courseCode;
         this.courseName = courseName;
@@ -39,11 +39,11 @@ public class Course implements Identifiable {
         this.courseName = courseName;
     }
 
-    public int getCredits() {
+    public double getCredits() {
         return credits;
     }
 
-    public void setCredits(int credits) {
+    public void setCredits(double credits) {
         this.credits = credits;
     }
 

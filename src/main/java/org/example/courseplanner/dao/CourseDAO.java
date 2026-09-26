@@ -21,7 +21,7 @@ public class CourseDAO {
 
             statement.setString(1, course.getCourseCode());
             statement.setString(2, course.getCourseName());
-            statement.setInt(3, course.getCredits());
+            statement.setDouble(3, course.getCredits());
 
             statement.executeUpdate();
             System.out.println("Course added: " + course.getCourseCode());
@@ -44,7 +44,7 @@ public class CourseDAO {
                 int id = resultSet.getInt("id");
                 String courseCode = resultSet.getString("course_code");
                 String courseName = resultSet.getString("course_name");
-                int credits = resultSet.getInt("credits");
+                double credits = resultSet.getDouble("credits");
 
                 Course course = new Course(id, courseCode, courseName, credits);
                 courses.add(course);
@@ -66,8 +66,8 @@ public class CourseDAO {
 
             statement.setString(1, course.getCourseCode());
             statement.setString(2, course.getCourseName());
-            statement.setInt(3, course.getCredits());
-            statement.setInt(4, course.getId());
+            statement.setDouble(3, course.getCredits());
+            statement.setDouble(4, course.getId());
 
             int rowsAffected = statement.executeUpdate();
             System.out.println("Rows updated: " + rowsAffected);

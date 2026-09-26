@@ -19,7 +19,7 @@ public class DatabaseConnection {
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
                     course_code TEXT NOT NULL UNIQUE,
                     course_name TEXT NOT NULL,
-                    credits INTEGER NOT NULL
+                    credits REAL NOT NULL
                 );
                 """;
 
