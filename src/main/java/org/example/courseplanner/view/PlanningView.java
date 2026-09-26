@@ -14,8 +14,10 @@ import javafx.scene.layout.VBox;
 import org.example.courseplanner.dao.CourseDAO;
 import org.example.courseplanner.graph.BreadthFirstSearch;
 import org.example.courseplanner.graph.CourseGraph;
+import org.example.courseplanner.graph.TopologicalSort;
 import org.example.courseplanner.model.Course;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class PlanningView extends VBox {
@@ -26,6 +28,8 @@ public class PlanningView extends VBox {
     private final ComboBox<Course> targetCourseComboBox;
     private final ListView<String> directPrerequisitesList;
     private final ListView<String> completePathList;
+    private final ListView<String> courseOrderList;
+    private final Label orderStatusLabel;
 
     public PlanningView() {
         courseDAO = new CourseDAO();
@@ -33,6 +37,8 @@ public class PlanningView extends VBox {
         targetCourseComboBox = new ComboBox<>();
         directPrerequisitesList = new ListView<>();
         completePathList = new ListView<>();
+        courseOrderList = new ListView<>();
+        orderStatusLabel = new Label();
 
         loadCourseOptions();
 
@@ -40,8 +46,16 @@ public class PlanningView extends VBox {
 
         Label directLabel = new Label("Direct Prerequisites:");
         Label completeLabel = new Label("Complete Prerequisite Path:");
+        Label orderLabel = new Label("Suggested Full Course Order:");
 
-        VBox resultsBox = new VBox(10, directLabel, directPrerequisitesList, completeLabel, completePathList);
+        Button generateOrderButton = new Button("Generate Full Course Order");
+        generateOrderButton.setOnAction(e -> handleGenerateOrder());
+
+        VBox resultsBox = new VBox(10,
+                directLabel, directPrerequisitesList,
+                completeLabel, completePathList,
+                generateOrderButton, orderStatusLabel,
+                orderLabel, courseOrderList);
 
         this.setSpacing(10);
         this.setPadding(new Insets(10));
@@ -81,7 +95,6 @@ public class PlanningView extends VBox {
 
         CourseGraph courseGraph = new CourseGraph();
 
-        // Direct prerequisites: one step back in the reverse graph
         List<Integer> directIds = courseGraph.getDirectPrerequisites(targetCourse.getId());
         ObservableList<String> directDisplay = FXCollections.observableArrayList();
         for (int id : directIds) {
@@ -89,7 +102,6 @@ public class PlanningView extends VBox {
         }
         directPrerequisitesList.setItems(directDisplay);
 
-        // Complete prerequisite path: full traversal using BFS on the reverse graph
         BreadthFirstSearch bfs = new BreadthFirstSearch(courseGraph.getReverseAdjacencyList());
         List<Integer> fullPathIds = bfs.traverse(targetCourse.getId());
 
@@ -99,11 +111,36 @@ public class PlanningView extends VBox {
                 completeDisplay.add(findCourseCode(id));
             }
         }
-        completePathList.setItems(completeDisplay);
-
         if (completeDisplay.isEmpty()) {
             completeDisplay.add("No prerequisites required.");
-            completePathList.setItems(completeDisplay);
+        }
+        completePathList.setItems(completeDisplay);
+    }
+
+    private void handleGenerateOrder() {
+        loadCourseOptions(); // refresh in case courses changed
+        CourseGraph courseGraph = new CourseGraph();
+
+        List<Integer> allCourseIds = new ArrayList<>();
+        for (Course c : allCourses) {
+            allCourseIds.add(c.getId());
+        }
+
+        TopologicalSort topologicalSort = new TopologicalSort();
+        List<Integer> order = topologicalSort.sort(courseGraph.getAdjacencyList(), allCourseIds);
+
+        ObservableList<String> orderDisplay = FXCollections.observableArrayList();
+        for (int id : order) {
+            orderDisplay.add(findCourseCode(id));
+        }
+        courseOrderList.setItems(orderDisplay);
+
+        if (order.size() < allCourseIds.size()) {
+            orderStatusLabel.setText("Warning: a cycle was detected. A complete valid order is not possible.");
+            orderStatusLabel.setStyle("-fx-text-fill: red;");
+        } else {
+            orderStatusLabel.setText("A valid course order was generated successfully.");
+            orderStatusLabel.setStyle("-fx-text-fill: green;");
         }
     }
 
