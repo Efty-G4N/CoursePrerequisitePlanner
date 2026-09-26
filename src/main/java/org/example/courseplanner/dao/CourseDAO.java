@@ -67,7 +67,7 @@ public class CourseDAO {
             statement.setString(1, course.getCourseCode());
             statement.setString(2, course.getCourseName());
             statement.setDouble(3, course.getCredits());
-            statement.setDouble(4, course.getId());
+            statement.setInt(4, course.getId());
 
             int rowsAffected = statement.executeUpdate();
             System.out.println("Rows updated: " + rowsAffected);
