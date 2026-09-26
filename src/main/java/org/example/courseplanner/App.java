@@ -1,5 +1,6 @@
 package org.example.courseplanner;
 
+import org.example.courseplanner.view.ProgressView;
 
 import org.example.courseplanner.view.PlanningView;
 
@@ -52,7 +53,7 @@ public class App extends Application {
         coursesButton.setOnAction(e -> root.setCenter(new CourseView()));
         prerequisitesButton.setOnAction(e -> root.setCenter(new PrerequisiteView()));
         planningButton.setOnAction(e -> root.setCenter(new PlanningView()));
-        progressButton.setOnAction(e -> centerLabel.setText("Student Progress section selected"));
+        progressButton.setOnAction(e -> root.setCenter(new ProgressView()));
 
         VBox leftBox = new VBox(10, coursesButton, prerequisitesButton, planningButton, progressButton);
         leftBox.setPadding(new Insets(15));
