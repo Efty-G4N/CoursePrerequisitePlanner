@@ -11,6 +11,7 @@ import javafx.scene.control.ListView;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.scene.layout.Priority;
 import org.example.courseplanner.dao.CourseDAO;
 import org.example.courseplanner.graph.BreadthFirstSearch;
 import org.example.courseplanner.graph.CourseGraph;
@@ -56,10 +57,14 @@ public class PlanningView extends VBox {
                 completeLabel, completePathList,
                 generateOrderButton, orderStatusLabel,
                 orderLabel, courseOrderList);
+        VBox.setVgrow(directPrerequisitesList, Priority.ALWAYS);
+        VBox.setVgrow(completePathList, Priority.ALWAYS);
+        VBox.setVgrow(courseOrderList, Priority.ALWAYS);
 
         this.setSpacing(10);
         this.setPadding(new Insets(10));
         this.getChildren().addAll(formGrid, resultsBox);
+        VBox.setVgrow(resultsBox, Priority.ALWAYS);
     }
 
     private GridPane buildForm() {
