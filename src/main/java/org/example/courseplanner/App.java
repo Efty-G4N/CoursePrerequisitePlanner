@@ -1,5 +1,6 @@
 package org.example.courseplanner;
 
+import org.example.courseplanner.view.CourseView;
 import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
@@ -42,7 +43,7 @@ public class App extends Application {
         planningButton.setMaxWidth(Double.MAX_VALUE);
         progressButton.setMaxWidth(Double.MAX_VALUE);
 
-        coursesButton.setOnAction(e -> centerLabel.setText("Courses section selected"));
+        coursesButton.setOnAction(e -> root.setCenter(new CourseView()));
         prerequisitesButton.setOnAction(e -> centerLabel.setText("Prerequisites section selected"));
         planningButton.setOnAction(e -> centerLabel.setText("Course Planning section selected"));
         progressButton.setOnAction(e -> centerLabel.setText("Student Progress section selected"));
