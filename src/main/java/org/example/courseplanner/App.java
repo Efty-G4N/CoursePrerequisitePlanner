@@ -6,6 +6,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
@@ -43,18 +44,25 @@ public class App extends Application {
         VBox leftBox = new VBox(10, coursesButton, prerequisitesButton, planningButton, progressButton);
         leftBox.setPadding(new Insets(15));
         leftBox.setPrefWidth(180);
+        // Left panel should keep its width but stretch full height of the window
+        leftBox.prefHeightProperty().bind(root.heightProperty());
         root.setLeft(leftBox);
 
         // Center section: main content area
         centerLabel = new Label("Main Content Area");
         VBox centerBox = new VBox(centerLabel);
         centerBox.setPadding(new Insets(15));
+        // Center area should grow to fill remaining width and height
+        centerBox.prefWidthProperty().bind(root.widthProperty().subtract(leftBox.getPrefWidth()));
+        centerBox.prefHeightProperty().bind(root.heightProperty());
         root.setCenter(centerBox);
 
         Scene scene = new Scene(root, 800, 500);
 
         primaryStage.setTitle("Course Prerequisite Planner");
         primaryStage.setScene(scene);
+        primaryStage.setMinWidth(600);
+        primaryStage.setMinHeight(400);
         primaryStage.show();
     }
 
