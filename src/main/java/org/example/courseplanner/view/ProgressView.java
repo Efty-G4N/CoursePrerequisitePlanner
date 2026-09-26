@@ -13,6 +13,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.scene.layout.Priority;
 import org.example.courseplanner.dao.CompletedCourseDAO;
 import org.example.courseplanner.dao.CourseDAO;
 import org.example.courseplanner.dao.StudentDAO;
@@ -72,11 +73,15 @@ public class ProgressView extends VBox {
 
         Label notCompletedLabel = new Label("Not Completed:");
         Label completedLabel = new Label("Completed Courses:");
+        VBox.setVgrow(notCompletedList, Priority.ALWAYS);
+        VBox.setVgrow(completedList, Priority.ALWAYS);
 
         VBox notCompletedBox = new VBox(5, notCompletedLabel, notCompletedList);
         VBox completedBox = new VBox(5, completedLabel, completedList);
 
         HBox listsRow = new HBox(10, notCompletedBox, markButtonsBox, completedBox);
+        HBox.setHgrow(notCompletedBox, Priority.ALWAYS);
+        HBox.setHgrow(completedBox, Priority.ALWAYS);
 
         Button showAvailableButton = new Button("Show Available Courses");
         showAvailableButton.setOnAction(e -> handleShowAvailable());
@@ -84,10 +89,12 @@ public class ProgressView extends VBox {
         Label availableLabel = new Label("Available Courses (prerequisites met):");
 
         VBox availableBox = new VBox(10, showAvailableButton, availableLabel, availableCoursesList);
-
+        VBox.setVgrow(availableCoursesList, Priority.ALWAYS);
         this.setSpacing(10);
         this.setPadding(new Insets(10));
         this.getChildren().addAll(studentForm, listsRow, availableBox);
+        VBox.setVgrow(listsRow, Priority.ALWAYS);
+        VBox.setVgrow(availableBox, Priority.ALWAYS);
     }
 
     private GridPane buildStudentForm() {
