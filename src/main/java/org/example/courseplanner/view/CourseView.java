@@ -116,6 +116,15 @@ public class CourseView extends VBox {
         tableView.getColumns().add(codeColumn);
         tableView.getColumns().add(nameColumn);
         tableView.getColumns().add(creditsColumn);
+
+        // make columns share the table's full width proportionally,
+        // instead of leaving empty space on the right
+        tableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+
+        idColumn.prefWidthProperty().bind(tableView.widthProperty().multiply(0.10));
+        codeColumn.prefWidthProperty().bind(tableView.widthProperty().multiply(0.20));
+        nameColumn.prefWidthProperty().bind(tableView.widthProperty().multiply(0.50));
+        creditsColumn.prefWidthProperty().bind(tableView.widthProperty().multiply(0.20));
     }
 
     private void setupRowSelectionListener() {

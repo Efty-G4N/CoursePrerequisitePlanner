@@ -16,7 +16,7 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 import org.example.courseplanner.database.DatabaseConnection;
-
+import org.example.courseplanner.concurrency.AppExecutor;
 
 
 public class App extends Application {
@@ -76,6 +76,10 @@ public class App extends Application {
         primaryStage.setMinWidth(600);
         primaryStage.setMinHeight(400);
         primaryStage.show();
+    }
+    @Override
+    public void stop() {
+        AppExecutor.shutdown();
     }
 
     public static void main(String[] args) {
