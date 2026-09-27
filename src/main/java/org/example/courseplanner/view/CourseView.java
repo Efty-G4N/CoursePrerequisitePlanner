@@ -236,12 +236,9 @@ public class CourseView extends VBox {
             return;
         }
 
-        double credits;
-        try {
-            credits = Double.parseDouble(creditsText);
-        } catch (NumberFormatException ex) {
-            showAlert("Input Error", "Credits must be a valid number (e.g., 3 or 1.5).");
-            return;
+        Double credits = parseValidCredits(creditsText);
+        if (credits == null) {
+            return; // alert already shown inside parseValidCredits()
         }
 
         Course newCourse = new Course(0, code, name, credits);
@@ -272,12 +269,9 @@ public class CourseView extends VBox {
             return;
         }
 
-        double credits;
-        try {
-            credits = Double.parseDouble(creditsText);
-        } catch (NumberFormatException ex) {
-            showAlert("Input Error", "Credits must be a valid number (e.g., 3 or 1.5).");
-            return;
+        Double credits = parseValidCredits(creditsText);
+        if (credits == null) {
+            return; // alert already shown inside parseValidCredits()
         }
 
         selectedCourse.setCourseCode(code);
@@ -308,6 +302,31 @@ public class CourseView extends VBox {
         creditsField.clear();
         selectedCourse = null;
         tableView.getSelectionModel().clearSelection();
+    }
+
+    // Validates and parses the credits text field.
+// Returns the parsed value if valid (a positive number), or null if invalid
+// (an alert is shown to the user in that case, so the caller just needs to return).
+    private Double parseValidCredits(String creditsText) {
+        double credits;
+        try {
+            credits = Double.parseDouble(creditsText);
+        } catch (NumberFormatException ex) {
+            showAlert("Input Error", "Credits must be a valid number (e.g., 3 or 1.5).");
+            return null;
+        }
+
+        if (credits <= 0) {
+            showAlert("Input Error", "Credits must be greater than zero.");
+            return null;
+        }
+
+        if (credits > 10) {
+            showAlert("Input Error", "Credits value seems too large (must be 10 or less).");
+            return null;
+        }
+
+        return credits;
     }
 
     private void showAlert(String title, String message) {
