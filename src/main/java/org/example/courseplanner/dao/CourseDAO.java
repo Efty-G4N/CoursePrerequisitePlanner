@@ -12,8 +12,10 @@ import java.util.List;
 
 public class CourseDAO {
 
-    // CREATE: adds a new course to the database
-    public void addCourse(Course course) {
+    /// CREATE: adds a new course to the database.
+// Returns true if the course was added successfully,
+// false if it failed (for example, a duplicate course code).
+    public boolean addCourse(Course course) {
         String sql = "INSERT INTO courses (course_code, course_name, credits) VALUES (?, ?, ?)";
 
         try (Connection connection = DatabaseConnection.getConnection();
@@ -25,9 +27,11 @@ public class CourseDAO {
 
             statement.executeUpdate();
             System.out.println("Course added: " + course.getCourseCode());
+            return true;
 
         } catch (SQLException e) {
             System.out.println("Error adding course: " + e.getMessage());
+            return false;
         }
     }
 

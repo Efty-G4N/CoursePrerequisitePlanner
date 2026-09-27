@@ -245,7 +245,13 @@ public class CourseView extends VBox {
         }
 
         Course newCourse = new Course(0, code, name, credits);
-        courseDAO.addCourse(newCourse);
+        boolean success = courseDAO.addCourse(newCourse);
+
+        if (!success) {
+            showAlert("Add Error",
+                    "Could not add the course. A course with code '" + code + "' may already exist.");
+            return;
+        }
 
         clearForm();
         loadCourseData();
