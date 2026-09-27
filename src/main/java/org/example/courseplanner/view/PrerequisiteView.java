@@ -141,6 +141,13 @@ public class PrerequisiteView extends VBox {
             return;
         }
 
+        // NEW: prevent adding the exact same relationship twice
+        if (prerequisiteDAO.prerequisiteExists(selectedCourse.getId(), selectedPrerequisite.getId())) {
+            showAlert("Duplicate Relationship",
+                    "This prerequisite relationship already exists.");
+            return;
+        }
+
         // Simulate adding this edge on a copy of the graph to check for a cycle
         // BEFORE actually writing it to the database.
         CourseGraph courseGraph = new CourseGraph();

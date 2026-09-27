@@ -30,6 +30,30 @@ public class PrerequisiteDAO {
         }
     }
 
+    // Checks whether this exact prerequisite relationship already exists,
+// so we can prevent adding the same pair twice.
+    public boolean prerequisiteExists(int courseId, int prerequisiteCourseId) {
+        String sql = "SELECT COUNT(*) FROM prerequisites WHERE course_id = ? AND prerequisite_course_id = ?";
+
+        try (Connection connection = DatabaseConnection.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+
+            statement.setInt(1, courseId);
+            statement.setInt(2, prerequisiteCourseId);
+
+            try (ResultSet resultSet = statement.executeQuery()) {
+                if (resultSet.next()) {
+                    return resultSet.getInt(1) > 0;
+                }
+            }
+
+        } catch (SQLException e) {
+            System.out.println("Error checking existing prerequisite: " + e.getMessage());
+        }
+
+        return false;
+    }
+
     // READ: retrieves all prerequisite relationships
     public List<Prerequisite> getAllPrerequisites() {
         List<Prerequisite> prerequisites = new ArrayList<>();
