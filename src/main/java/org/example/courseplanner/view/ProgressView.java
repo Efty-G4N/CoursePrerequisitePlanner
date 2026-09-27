@@ -182,8 +182,34 @@ public class ProgressView extends VBox {
             return;
         }
 
+        List<Integer> completedIds = completedCourseDAO.getCompletedCourseIds(selectedStudent.getId());
+        CourseGraph courseGraph = new CourseGraph();
+
+        List<Course> validCourses = new ArrayList<>();
+        List<String> blockedDescriptions = new ArrayList<>();
+
+        // Check each selected course: only allow marking it completed if all of
+        // its direct prerequisites are already in the student's completed list.
         for (Course c : selectedCourses) {
+            List<Integer> directPrereqs = courseGraph.getDirectPrerequisites(c.getId());
+            if (completedIds.containsAll(directPrereqs)) {
+                validCourses.add(c);
+            } else {
+                blockedDescriptions.add(c.getCourseCode() + " - " + c.getCourseName());
+            }
+        }
+
+        for (Course c : validCourses) {
             completedCourseDAO.markCompleted(selectedStudent.getId(), c.getId());
+        }
+
+        if (!blockedDescriptions.isEmpty()) {
+            StringBuilder message = new StringBuilder(
+                    "These courses were NOT marked completed because their prerequisites are not completed yet:\n");
+            for (String desc : blockedDescriptions) {
+                message.append("- ").append(desc).append("\n");
+            }
+            showAlert("Prerequisites Not Met", message.toString());
         }
 
         loadCourseLists();
