@@ -220,7 +220,20 @@ public class CourseView extends VBox {
 
         searchTask.setOnFailed(event -> {
             bookProgressIndicator.setVisible(false);
-            showAlert("Network Error", "Failed to fetch book data: " + searchTask.getException().getMessage());
+
+            Throwable exception = searchTask.getException();
+            String userMessage;
+
+            if (exception instanceof java.net.UnknownHostException
+                    || exception instanceof java.net.ConnectException) {
+                userMessage = "No internet connection detected. Please check your network and try again.";
+            } else if (exception instanceof java.net.http.HttpTimeoutException) {
+                userMessage = "The request to Open Library timed out. Please try again.";
+            } else {
+                userMessage = "Failed to fetch book data: " + exception.getMessage();
+            }
+
+            showAlert("Network Error", userMessage);
         });
 
         AppExecutor.getExecutorService().submit(searchTask);
