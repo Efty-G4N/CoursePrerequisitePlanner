@@ -40,6 +40,6 @@ public class BookApiService {
 
         return objectMapper.readValue(response.body(), BookSearchResult.class);
     }
-    
+
 
 }

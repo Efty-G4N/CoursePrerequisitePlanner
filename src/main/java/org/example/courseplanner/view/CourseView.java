@@ -11,6 +11,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressIndicator;
+import javafx.scene.control.ListView;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
@@ -21,6 +22,9 @@ import javafx.scene.layout.VBox;
 import org.example.courseplanner.concurrency.AppExecutor;
 import org.example.courseplanner.dao.CourseDAO;
 import org.example.courseplanner.model.Course;
+import org.example.courseplanner.api.BookApiService;
+import org.example.courseplanner.api.BookDoc;
+import org.example.courseplanner.api.BookSearchResult;
 
 import java.util.List;
 
@@ -29,6 +33,10 @@ public class CourseView extends VBox {
     private final CourseDAO courseDAO;
     private final TableView<Course> tableView;
     private final ProgressIndicator progressIndicator;
+    private final BookApiService bookApiService;
+    private final Button findBookButton;
+    private final ListView<String> bookResultsList;
+    private final ProgressIndicator bookProgressIndicator;
 
     private final TextField codeField;
     private final TextField nameField;
@@ -42,6 +50,15 @@ public class CourseView extends VBox {
 
         progressIndicator = new ProgressIndicator();
         progressIndicator.setVisible(false);
+        bookApiService = new BookApiService();
+
+        findBookButton = new Button("Find Reference Book");
+        findBookButton.setOnAction(e -> handleFindReferenceBook());
+
+        bookResultsList = new ListView<>();
+
+        bookProgressIndicator = new ProgressIndicator();
+        bookProgressIndicator.setVisible(false);
 
         codeField = new TextField();
         codeField.setPromptText("Course Code");
@@ -58,10 +75,15 @@ public class CourseView extends VBox {
 
         GridPane formGrid = buildForm();
 
+        Label bookSectionLabel = new Label("Reference Book (select a course above, then click Find):");
+        HBox bookButtonBox = new HBox(10, findBookButton, bookProgressIndicator);
+        VBox bookSection = new VBox(5, bookSectionLabel, bookButtonBox, bookResultsList);
+
         this.setSpacing(10);
         this.setPadding(new Insets(10));
-        this.getChildren().addAll(formGrid, progressIndicator, tableView);
+        this.getChildren().addAll(formGrid, progressIndicator, tableView, bookSection);
         VBox.setVgrow(tableView, Priority.ALWAYS);
+        VBox.setVgrow(bookResultsList, Priority.ALWAYS);
     }
 
     private GridPane buildForm() {
@@ -162,6 +184,46 @@ public class CourseView extends VBox {
         });
 
         AppExecutor.getExecutorService().submit(loadCoursesTask);
+    }
+
+    private void handleFindReferenceBook() {
+        if (selectedCourse == null) {
+            showAlert("Selection Error", "Please select a course from the table first.");
+            return;
+        }
+
+        String courseName = selectedCourse.getCourseName();
+        bookResultsList.getItems().clear();
+        bookProgressIndicator.setVisible(true);
+
+        Task<BookSearchResult> searchTask = new Task<>() {
+            @Override
+            protected BookSearchResult call() throws Exception {
+                // this runs on a background thread — the real network call happens here
+                return bookApiService.searchBooks(courseName);
+            }
+        };
+
+        searchTask.setOnSucceeded(event -> {
+            BookSearchResult result = searchTask.getValue();
+            bookProgressIndicator.setVisible(false);
+
+            if (result.getDocs() == null || result.getDocs().isEmpty()) {
+                bookResultsList.getItems().add("No books found for: " + courseName);
+                return;
+            }
+
+            for (BookDoc doc : result.getDocs()) {
+                bookResultsList.getItems().add(doc.toDisplayString());
+            }
+        });
+
+        searchTask.setOnFailed(event -> {
+            bookProgressIndicator.setVisible(false);
+            showAlert("Network Error", "Failed to fetch book data: " + searchTask.getException().getMessage());
+        });
+
+        AppExecutor.getExecutorService().submit(searchTask);
     }
 
     private void handleAddCourse() {
